@@ -7,7 +7,6 @@
            - Bezaliel Agung Trilaksana
 - Poin diskusi: Membahas Pitfall mana yang di pilih
 - Perbedaan pendapat (jika ada): Liel setuju dengan pifall "the network avaliable" by peter, tetapi Niko kurang setuju  dengan itu. 
-
 ## [Tanggal diskusi 2]
 - ...
 
