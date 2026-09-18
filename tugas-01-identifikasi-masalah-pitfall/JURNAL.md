@@ -13,6 +13,13 @@
 ## Review Silang
 - [Nama] mengomentari analisis [Nama lain]: ...
 
+## Referensi 
+
+link 
+- https://dilankam.medium.com/latency-is-zero-81f3f99a9136
+- https://www.cisco.com/site/us/en/learn/topics/cloud-networking/what-is-low-latency.html
+
+
 ## Log Penggunaan AI (Level 2)
 
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
