@@ -6,6 +6,7 @@
 |---|---|---|
 | Bezaliel Agung Trilaksana | 103072400008 | Pitfall 1 |
 | Niko Rajani Syahputra | 103072400167 | Pitfall 2 |
+| | | |
 
 ## Pitfall 1: [nama pitfall] — ditulis oleh [nama]
 
