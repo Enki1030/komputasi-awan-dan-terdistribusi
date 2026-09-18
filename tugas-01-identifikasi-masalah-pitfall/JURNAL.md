@@ -18,5 +18,5 @@
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|---|---|---|---|---|
+|18/09/2026|Claude|Bagaimana Penjelasan Mendalam mengenai fallacy distributed computing by peter deutcsh|defenisi Mengenai 8 fallacy distributed computing|-|
 | ... | ... | ... | ... | ... |
