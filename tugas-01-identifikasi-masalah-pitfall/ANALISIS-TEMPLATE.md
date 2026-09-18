@@ -1,12 +1,11 @@
 # Tugas 1 — Analisis Pitfall FoodGo
 
-**Kelompok:** [nama kelompok]
+**Kelompok:** Mati Tanam
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [nama 1] | [nim] | [pitfall/bagian yang dikerjakan] |
-| [nama 2] | [nim] | [pitfall/bagian yang dikerjakan] |
-| [nama 3] | [nim] | [pitfall/bagian yang dikerjakan] |
+| Bezaliel Agung Trilaksana | 103072400008 | Pitfall 1 |
+| Niko Rajani Syahputra | 103072400167 | Pitfall 2 |
 
 ## Pitfall 1: [nama pitfall] — ditulis oleh [nama]
 
