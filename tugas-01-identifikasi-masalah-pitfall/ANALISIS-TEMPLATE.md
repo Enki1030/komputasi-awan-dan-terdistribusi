@@ -16,9 +16,9 @@
 
 **Dampak ke FoodGo:** mengalami kegagalan sistem saat pesanan melonjak (misalnya jam makan siang atau saat promo besar).
 
-**Solusi desain awal:** [usulan solusi]
+**Solusi desain awal:** memberikan waktu timeout yang ideal untuk menquery data tersebut kurang lebih 3 detik.Memberikan caching supaya memastikan data yang sering diakses tersedia tanpa kueri database berulang   
 
-**Trade-off:** Mungkin ada beberapa pesanan yang gagal dikarenakan timeout tersebut 
+**Trade-off:** Mungkin ada beberapa pesanan yang gagal di pesan, dikarenakan timeout yang tidak lama dikarenakan latency yang tinggi.Tinggi nya file aplikasi tersebut dikarenakan chache nya sangat besar filenya 
 
 ---
 
