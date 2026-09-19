@@ -22,9 +22,17 @@
 
 ---
 
-## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 2: Network is Reliabel — ditulis oleh Niko Rajani Syahputra
 
-(ulangi struktur di atas)
+**Bukti di skenario:** "Tim menemukan bahwa kode mereka menulis asumsi seperti # network is always reliable, no need for retry "
+
+**Kenapa ini keliru:** Programmer beranggapan bahwa jaringan mereka aman. asumsi ini muncul ketika mereka melakukan testing pada program (misal manggil 1 function) dan berhasil. Faktanya, jenis jenis kegagalan jarinagn itu ada banyak, seperti Kabel bisa putus, router bisa crash, sinyal Wi-Fi bisa terganggu, atau pusat data bisa mati listrik. Jadi mengasumsikan bahwa network is reliable itu keliru karena programmer hanya melakukan percobaan ketika testing saja sebelum di serbu oleh request pengguna. 
+
+**Dampak ke FoodGo:** [mekanisme kegagalan konkret]
+
+**Solusi desain awal:** [usulan solusi]
+
+**Trade-off:** [apa yang dikorbankan/risiko dari solusi ini]
 
 ---
 
