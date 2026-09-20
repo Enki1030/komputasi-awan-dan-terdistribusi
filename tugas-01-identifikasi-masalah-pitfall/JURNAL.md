@@ -2,11 +2,11 @@
 
 > Isi jurnal ini selama proses diskusi berlangsung, bukan ditulis ulang rapi di akhir. Tulis dengan gaya bebas — poin diskusi, kebuntuan, perubahan pikiran.
 
-## [Tanggal diskusi 1]
-- Peserta: [nama-nama yang hadir]
-- Poin diskusi: ...
-- Perbedaan pendapat (jika ada): ...
-
+## 18 September 2026
+- Peserta: - Niko Rajani Syahputra Pane
+           - Bezaliel Agung Trilaksana
+- Poin diskusi: Membahas Pitfall mana yang di pilih
+- Perbedaan pendapat (jika ada): Liel setuju dengan pifall "the network avaliable" by peter, tetapi Niko kurang setuju  dengan itu. 
 ## [Tanggal diskusi 2]
 - ...
 
