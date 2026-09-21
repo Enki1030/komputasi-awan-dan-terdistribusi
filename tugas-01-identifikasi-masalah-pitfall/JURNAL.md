@@ -19,7 +19,20 @@
 - Perbedaan Pendapat: -.
 
 ## Review Silang
-- Niko Rajani mengomentari analisis Bezaliel Agung mengenai pitall 1.: Menurut saya, bukti skenario yang di sajikan sudah sangat tepat, karena mengambil data soal timeout yang berhubungan erat dengan kasus latenzy is zero.
+
+- Bezaliel Agung Trilaksana mengomentari analisis Niko Rajani Syahputra Pane: 
+
+pitch 2  "Network is Reliabel":
+- Pemecahan masalahnya udah bagus, namun harus tetap diberikan waktu timeout,sebab jika hanya dibuat fitur coba lagi, otomatis pengguna tidak tau jika semisalnya transaksi sebelumnya itu telah gagal dan tiba tiba diberikan pembayaran ulang. Tetapi untuk penjelasannya tersebut sudah benar.
+
+pitch 3 "Single Point of Failure / Monolith" :
+- saya sangat setuju dengan keputusan pilihan Niko dengan pilihan Single Point of Failure, sebab semua modul system tidak bisa dijalankan didalam 1 jalur saja. Kenapa begitu? sebab semua beban diberikan pada jalur tersebut, apalagi ada notifikasi kurir dan pesanan. Data tersebut sudah sangat besar atau berat untuk menanggani 1 jalur tersebut, karena itu diberikan solusi berbagai macam jalur untuk meringankan hal tersebut.
+
+- Niko Rajani Syahputra Pane mengomentari analisis Bezaliel Agung Trilaksana:
+
+Pitall 1 "latency is Zero": 
+
+- Menurut saya, bukti skenario yang di sajikan sudah sangat tepat, karena mengambil data soal timeout yang berhubungan erat dengan kasus latenzy is zero.
   solusi yang di tawarkan juga cocok untuk masalah yang ada, seperti memberikan timeout dan memberikan cache agar tidak membebani RAM dan mempercepat memproses data data yang sering di gunakan.
 
 ## Referensi 
