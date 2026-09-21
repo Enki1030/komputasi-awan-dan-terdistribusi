@@ -15,12 +15,18 @@ Bukti:
 - Peserta = - Niko Rajani Syahputra Pane
             - Bezaliel Agung Trilaksana
 - Poin Diskusi: Membahas Soal compare antar branch + diskusi pitfall ke-3
-- Perbedaan Pendapat: Kami saling mencari tau bagaimana caranya compare antar branch. 
+- Perbedaan Pendapat: Kami saling mencari tau bagaimana caranya compare antar branch.
+
+Bukti:
+![Bukti Pertemuan Discord 18 september](bukti/20-09-2026.png)
 ## 21 September 2026
 - Peserta = - Niko Rajani Syahputra Pane
             - Bezaliel Agung Trilaksana
 - Poin Diskusi: Membahas kesimpulan, review silang dan tahap akhir jurnaling. 
 - Perbedaan Pendapat: -.
+
+Bukti:
+![Bukti Pertemuan Discord 18 september](bukti/21-09-2026.png)
 
 ## Review Silang
 
