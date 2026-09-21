@@ -53,3 +53,6 @@
 ## Kesimpulan Kelompok
 
 [Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
+
+Ringkasan : berdasarkan dari jawaban Bezaliel dan Niko arsitektur yang diperlukan adalah timeout,caching dan memisahkan modul.Jika FoodGo diperbaiki melalui 3 hal tersebut, aplikasi tersebut bisa mengurangi masalah terjadinya kegagalan sistem disaat pesanan melonjak dan mengurangi terjadi nya crash bagian backend tersebut.
+
