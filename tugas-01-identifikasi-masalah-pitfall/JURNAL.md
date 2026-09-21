@@ -8,7 +8,7 @@
 - Poin diskusi: Membahas Pitfall mana yang di pilih
 - Perbedaan pendapat (jika ada): Liel setuju dengan pifall "the network avaliable" by peter, tetapi Niko kurang setuju  dengan itu.
 Bukti:
-<img src="tugas-01-identifikasi-masalah-pitfall/bukti/18-09-2026.png" alt="Teks Alternatif">
+<img src="komputasi-awan-dan-terdistribusi/tugas-01-identifikasi-masalah-pitfall/bukti/18-09-2026.png" alt="Teks Alternatif">
 
  
 ## 20 September 2026
