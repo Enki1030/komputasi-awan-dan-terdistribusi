@@ -22,6 +22,13 @@
 - Niko Rajani mengomentari analisis Bezaliel Agung mengenai pitall 1.: Menurut saya, bukti skenario yang di sajikan sudah sangat tepat, karena mengambil data soal timeout yang berhubungan erat dengan kasus latenzy is zero.
   solusi yang di tawarkan juga cocok untuk masalah yang ada, seperti memberikan timeout dan memberikan cache agar tidak membebani RAM dan mempercepat memproses data data yang sering di gunakan.
 
+## Referensi 
+
+link 
+- https://dilankam.medium.com/latency-is-zero-81f3f99a9136
+- https://www.cisco.com/site/us/en/learn/topics/cloud-networking/what-is-low-latency.html
+
+
 ## Log Penggunaan AI (Level 2)
 
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
