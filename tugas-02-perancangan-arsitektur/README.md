@@ -27,6 +27,7 @@ graph LR
     OrderSvc -->|3. Publish Event OrderCreated| Broker[(Message Broker)]
     Broker -->|4a. Subscribe| NotifSvc[Service Notifikasi Kurir]
     Broker -->|4b. Subscribe| RestoSvc[Service Katalog Resto]
+```
 
 ````
 
