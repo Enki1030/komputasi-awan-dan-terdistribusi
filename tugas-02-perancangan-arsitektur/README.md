@@ -22,12 +22,12 @@ Tidak perlu software berbayar. Dua opsi:
 ````markdown
 ```mermaid
 graph LR
-  Client[Pelanggan] -->|HTTP request pesan| OrderSvc[Service Pesanan]
-  OrderSvc -->|RPC sinkron| PaymentSvc[Service Pembayaran]
-  OrderSvc -->|publish event OrderCreated| Broker[(Message Broker)]
-  Broker -->|subscribe| NotifSvc[Service Notifikasi Kurir]
-  Broker -->|subscribe| RestoSvc[Service Katalog Resto]
-```
+    Client[Pelanggan] -->|1. HTTP Request Pesan| OrderSvc[Service Pesanan]
+    OrderSvc -->|2. RPC / HTTP Sinkron| PaymentSvc[Service Pembayaran]
+    OrderSvc -->|3. Publish Event OrderCreated| Broker[(Message Broker)]
+    Broker -->|4a. Subscribe| NotifSvc[Service Notifikasi Kurir]
+    Broker -->|4b. Subscribe| RestoSvc[Service Katalog Resto]
+
 ````
 
 **Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
