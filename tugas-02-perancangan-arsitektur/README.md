@@ -19,28 +19,7 @@ Tidak perlu software berbayar. Dua opsi:
 
 **Opsi A — Mermaid di dalam Markdown (disarankan).** Ditulis sebagai teks biasa di `README.md`, otomatis dirender jadi diagram oleh GitHub — tidak perlu install apa pun.
 
-```mermaid
-graph TD
-    Client[Pelanggan] -->|1. Request HTTP| Gateway[API Gateway]
 
-    %% Alur Katalog (SOA - Sinkron)
-    Gateway -->|2. Baca Data Menu (Sinkron)| Katalog[Service Katalog]
-
-    %% Alur Checkout & Pembayaran (SOA - Sinkron)
-    Gateway -->|3. Buat Pesanan (Sinkron)| Order[Service Pesanan]
-    Order -->|4. Request Potong Saldo (Sinkron)| Payment[Service Pembayaran]
-    Payment -.->|5. Respons: Lunas (Sinkron)| Order
-
-    %% Alur Pub-Sub (Asinkron)
-    Order -->|6. Publish Event 'Pesanan_Lunas' (Asinkron)| Broker[(Message Broker)]
-
-    Broker -->|7. Subscribe Event| Dapur[Service Dapur Resto]
-    Broker -->|8. Subscribe Event| Kurir[Service Penugasan Kurir]
-
-    %% Penyelesaian End-to-End
-    Kurir -.->|9. Push Notif: Kurir Ditemukan (Asinkron)| Gateway
-    Gateway -.->|10. Tampilkan di Layar Pelanggan| Client
-```
 
 
 **Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
@@ -77,7 +56,7 @@ Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — li
 Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkron) untuk mengurus operasional lanjutan. Service Pesanan tidak perlu lagi repot-repot menghubungi restoran atau mencari pengemudi; ia hanya menyiarkan satu event "Pesanan Lunas" ke dalam Message Broker dan tugas utamanya pun selesai. Service Dapur dan Service Kurir bertindak sebagai subscriber independen yang mengambil event tersebut dan mengeksekusinya secara paralel. Karena mereka dipisahkan oleh broker, jika tim kurir memutuskan untuk me-restart server mereka, tim resto tidak akan merasakan dampaknya dan tetap bisa menerima pesanan seperti biasa.
 
 2. Diagram:
-   ```mermaid
+```mermaid
 graph TD
     Client[Pelanggan]
 
