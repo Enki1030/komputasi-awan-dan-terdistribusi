@@ -56,6 +56,7 @@ Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — li
 Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkron) untuk mengurus operasional lanjutan. Service Pesanan tidak perlu lagi repot-repot menghubungi restoran atau mencari pengemudi; ia hanya menyiarkan satu event "Pesanan Lunas" ke dalam Message Broker dan tugas utamanya pun selesai. Service Dapur dan Service Kurir bertindak sebagai subscriber independen yang mengambil event tersebut dan mengeksekusinya secara paralel. Karena mereka dipisahkan oleh broker, jika tim kurir memutuskan untuk me-restart server mereka, tim resto tidak akan merasakan dampaknya dan tetap bisa menerima pesanan seperti biasa.
 
 2. Diagram:
+
 ```mermaid
 graph TD
     Client[Pelanggan]
@@ -69,8 +70,9 @@ graph TD
     
     Order -->|"5. Potong Saldo (Sinkron, Req-Res)"| Payment[Service Pembayaran]
     
-    %% Catatan untuk ketahanan SOA
-    note right of Order: Pasang Timeout & Circuit Breaker di sini
+    %% Catatan untuk ketahanan SOA kita ubah menjadi kotak label biasa
+    Note1[Catatan: Pasang Timeout & Circuit Breaker di sini]
+    Order -.- Note1
     
     Payment -.->|"6. Respons: Saldo Terpotong (Sinkron, Req-Res)"| Order
     Order -.->|"7. Respons ke Klien: Pembayaran Berhasil (Sinkron, Req-Res)"| Gateway
@@ -79,13 +81,15 @@ graph TD
     %% Alur Pub-Sub (Asinkron, Event-Driven)
     Order -->|"9. Publish 'PaymentConfirmed' (Asinkron, Event)"| Broker[(Message Broker)]
     
-    %% Catatan Risiko Crash
-    note right of Order: Risiko: Jika Order crash sebelum poin 9, event hilang. Perlu "Outbox Pattern".
+    %% Catatan Risiko Crash kita hubungkan dengan garis putus-putus
+    Note2[Risiko: Jika Order crash sblm poin 9, event hilang. Perlu Outbox Pattern]
+    Order -.- Note2
 
     Broker -->|"10a. Subscribe Event"| Dapur[Service Dapur Resto]
     Broker -->|"10b. Subscribe Event"| Kurir[Service Kurir & Notif]
     
-    note right of Dapur: Wajib Idempoten untuk cegah masak 2x
+    Note3[Catatan Dapur: Wajib Idempoten untuk cegah masak 2x]
+    Dapur -.- Note3
 
     %% Penyampaian Notifikasi ke Klien
     Kurir -.->|"11. Push Notif via WebSocket (Asinkron, Event)"| Client
@@ -95,6 +99,7 @@ graph TD
     Broker -->|"13a. Subscribe Event (Trigger Refund)"| Payment
     Broker -->|"13b. Subscribe Event (Batal Cari Kurir)"| Kurir
 ```
+
 3. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
     1. Fase Inisiasi dan Katalog
         Proses diawali ketika klien (pelanggan) mengakses antarmuka aplikasi untuk memuat daftar menu restoran. Klien mengirimkan permintaan melalui API Gateway, yang kemudian diteruskan ke Service Katalog menggunakan komunikasi sinkron berbasis request-response.             Pendekatan sinkron pada fase ini penting untuk menjamin klien memperoleh representasi data yang paling aktual secara real-time.
