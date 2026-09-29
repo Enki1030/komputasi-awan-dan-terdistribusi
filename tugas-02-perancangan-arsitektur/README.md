@@ -59,7 +59,7 @@ Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkro
 
 ```mermaid
 graph LR
-    Client[Pelanggan]
+   Client[Pelanggan]
     Gateway[API Gateway]
     Katalog[Service Katalog]
     Order[Service Pesanan]
