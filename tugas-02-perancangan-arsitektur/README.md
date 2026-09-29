@@ -58,7 +58,7 @@ Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkro
 2. Diagram:
 
 ```mermaid
-graph TD
+graph LR
     Client[Pelanggan]
 
     %% Alur SOA / API (Sinkron, Request-Response)
