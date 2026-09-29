@@ -57,58 +57,49 @@ Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkro
 
 2. Diagram:
 ```mermaid
-sequenceDiagram
-    actor Client as Pelanggan
-    participant Gateway as API Gateway
-    participant Katalog as Service Katalog
-    participant Order as Service Pesanan
-    participant Payment as Service Pembayaran
-    participant Broker as Message Broker
-    participant Dapur as Service Dapur
-    participant Kurir as Service Kurir
+graph LR
+    Client[Pelanggan]
+    Gateway[API Gateway]
+    Katalog[Service Katalog]
+    Order[Service Pesanan]
+    Payment[Service Pembayaran]
+    Broker[(Message Broker)]
+    Dapur[Service Dapur Resto]
+    Kurir[Service Kurir & Notif]
 
-    Client->>Gateway: 1. [Request] Lihat Katalog
-    Gateway->>Katalog: 2. [Request] Teruskan
-    Katalog-->>Gateway: 3. [Response] Data Katalog
-    Gateway-->>Client: 4. [Response] Tampilkan Menu
+    Client -->|"1. [Request] Lihat Katalog"| Gateway
+    Gateway -->|"2. [Request] Teruskan"| Katalog
+    Katalog -.->|"3. [Response] Data Katalog"| Gateway
+    Gateway -.->|"4. [Response] Tampilkan Menu"| Client
 
-    Client->>Gateway: 5. [Request] Checkout
-    Gateway->>Order: 6. [Request] Teruskan Checkout
-    Order->>Dapur: 7. [Request] Cek & Kunci Stok
+    Client -->|"5. [Request] Checkout"| Gateway
+    Gateway -->|"6. [Request] Teruskan Checkout"| Order
+    Order -->|"7. [Request] Cek & Kunci Stok"| Dapur
 
-    alt [ALT] Stok Habis
-        rect rgb(255, 240, 240)
-        Dapur-->>Order: 8a. [Response] Stok Kosong
-        Order-->>Gateway: 8b. [Response] Gagal Checkout
-        Gateway-->>Client: 8c. [Response] Tampilkan 'Stok Habis'
-        end
-    else [UTAMA] Stok Ada
-        rect rgb(240, 255, 240)
-        Dapur-->>Order: 9a. [Response] Stok Dikunci
-        Order-->>Gateway: 9b. [Response] Buat Timer 5 Menit
-        Gateway-->>Client: 9c. [Response] Tampilkan Layar Bayar
+    Dapur -.->|"[ALT] 8a. [Response] Stok Kosong"| Order
+    Order -.->|"[ALT] 8b. [Response] Gagal Checkout"| Gateway
+    Gateway -.->|"[ALT] 8c. [Response] Tampilkan 'Stok Habis'"| Client
 
-        Client->>Gateway: 10. [Request] Konfirmasi Bayar
-        Gateway->>Order: 11. [Request] Teruskan Bayar
-        Order->>Payment: 12. [Request] Potong Saldo
-        Payment-->>Order: 13. [Response] Saldo Terpotong
-        
-        Order-)Broker: 14. [Publish] OrderPaid
-        Broker-)Dapur: 15a. [Subscribe] Mulai Masak
-        Broker-)Kurir: 15b. [Subscribe] Cari Driver
-        Kurir-->>Client: 16. [Push Notif] Driver Ditemukan
-        end
-    end
+    Dapur -.->|"9a. [Response] Stok Dikunci"| Order
+    Order -.->|"9b. [Response] Buat Timer 5 Menit"| Gateway
+    Gateway -.->|"9c. [Response] Tampilkan Layar Bayar"| Client
 
-    opt [ALT] Waktu Bayar Habis (Timeout)
-        rect rgb(255, 240, 240)
-        Order-)Broker: 17. [Publish] OrderExpired
-        Broker-)Dapur: 18. [Subscribe] Lepas Kunci Stok
-        Order-->>Gateway: 19. [Response] Status Expired
-        Gateway-->>Client: 20. [Response] Tampilkan 'Waktu Habis'
-        end
-    end
+    Client -->|"10. [Request] Konfirmasi Bayar"| Gateway
+    Gateway -->|"11. [Request] Teruskan Bayar"| Order
+    Order -->|"12. [Request] Potong Saldo"| Payment
+    Payment -.->|"13. [Response] Saldo Terpotong"| Order
+    
+    Order -->|"14. [Publish] OrderPaid"| Broker
+    Broker -->|"15a. [Subscribe] Mulai Masak"| Dapur
+    Broker -->|"15b. [Subscribe] Cari Driver"| Kurir
+    Kurir -.->|"16. [Push Notif] Driver Ditemukan"| Client
+
+    Order -->|"[ALT] 17. [Publish] OrderExpired"| Broker
+    Broker -->|"[ALT] 18. [Subscribe] Lepas Kunci Stok"| Dapur
+    Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
+    Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
 ```
+
 
 3. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
     1. Fase Inisiasi dan Katalog
