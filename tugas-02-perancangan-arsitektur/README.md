@@ -95,10 +95,13 @@ graph LR
     Kurir -.->|"16. [Push Notif] Driver Ditemukan"| Client
 
     Order -->|"[ALT] 17. [Publish] OrderExpired"| Broker
+    Broker -->|"[ALT] 18. [Subscribe] Lepas Kunci Stok"| Dapur
+    Dapur -->|"[ALT] 18b. [Internal] TTL Habis Tanpa Event, Lepas Kunci"| Dapur
+    Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
+    Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
+
 ```
 <br>
-
- 
 
 3. ****Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):****
     <br>
@@ -147,9 +150,3 @@ graph LR
         Data di seluruh layanan tidak terbarui secara instan dalam satu transaksi database tunggal, melainkan secara bertahap. Terdapat jeda beberapa milidetik hingga detik dari saat Service Pesanan menyatakan `OrderPaid` sampai Service Kurir menerima pesan tersebut dan mengalokasikan pengemudi.
     
 
-    Broker -->|"[ALT] 18. [Subscribe] Lepas Kunci Stok"| Dapur
-    Dapur -->|"[ALT] 18b. [Internal] TTL Habis Tanpa Event, Lepas Kunci"| Dapur
-    Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
-    Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
-
-```
