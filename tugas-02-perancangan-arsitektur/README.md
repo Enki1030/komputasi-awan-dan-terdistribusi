@@ -51,9 +51,7 @@ Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — li
 
 ## Analisis Jawaban
 
-1. Kami memilih mengkombinasikan dua arsitektur **Service-Oriented Architecture (SOA)** dan **Publish-Subscribe**. Kita menerapkan SOA (komunikasi sinkron) pada interaksi yang berhadapan langsung dengan pelanggan yang butuh data aktual. Saat aplikasi memuat daftar menu dari Service Katalog atau memproses transaksi di Service Pembayaran, alurnya berjalan sebagai request-response langsung. Pelanggan mendapatkan validasi dan kepastian di detik yang sama bahwa uang mereka diterima dan pesanan tercatat.
-
-Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkron) untuk mengurus operasional lanjutan. Service Pesanan tidak perlu lagi repot-repot menghubungi restoran atau mencari pengemudi; ia hanya menyiarkan satu event "Pesanan Lunas" ke dalam Message Broker dan tugas utamanya pun selesai. Service Dapur dan Service Kurir bertindak sebagai subscriber independen yang mengambil event tersebut dan mengeksekusinya secara paralel. Karena mereka dipisahkan oleh broker, jika tim kurir memutuskan untuk me-restart server mereka, tim resto tidak akan merasakan dampaknya dan tetap bisa menerima pesanan seperti biasa.
+1. Kami memilih mengkombinasikan dua arsitektur **Service-Oriented Architecture (SOA)** dan **Publish-Subscribe**. Kita menerapkan SOA (komunikasi sinkron) pada interaksi yang berhadapan langsung dengan pelanggan yang butuh data aktual. Saat aplikasi memuat daftar menu dari Service Katalog atau memproses transaksi di Service Pembayaran, alurnya berjalan sebagai request-response langsung. Pelanggan mendapatkan validasi dan kepastian di detik yang sama bahwa uang mereka diterima dan pesanan tercatat. Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkron) untuk mengurus operasional lanjutan. Service Pesanan tidak perlu lagi repot-repot menghubungi restoran atau mencari pengemudi; ia hanya menyiarkan satu event "Pesanan Lunas" ke dalam Message Broker dan tugas utamanya pun selesai. Service Dapur dan Service Kurir bertindak sebagai subscriber independen yang mengambil event tersebut dan mengeksekusinya secara paralel. Karena mereka dipisahkan oleh broker, jika tim kurir memutuskan untuk me-restart server mereka, tim resto tidak akan merasakan dampaknya dan tetap bisa menerima pesanan seperti biasa.
 
 2. Diagram:
 ```mermaid
@@ -80,6 +78,7 @@ graph LR
     Order -.->|"[ALT] 8b. [Response] Gagal Checkout"| Gateway
     Gateway -.->|"[ALT] 8c. [Response] Tampilkan 'Stok Habis'"| Client
 
+    Dapur -.->|"9a. [Response] Stok Dikunci (Mulai TTL 60 Detik)"| Order
     Dapur -.->|"9a. [Response] Stok Dikunci"| Order
     Order -.->|"9b. [Response] Buat Timer 5 Menit"| Gateway
     Gateway -.->|"9c. [Response] Tampilkan Layar Bayar"| Client
@@ -90,12 +89,20 @@ graph LR
     Payment -.->|"13. [Response] Saldo Terpotong"| Order
     
     Order -->|"14. [Publish] OrderPaid"| Broker
+    Broker -->|"15a. [Subscribe] Mulai Masak (Batalkan TTL)"| Dapur
     Broker -->|"15a. [Subscribe] Mulai Masak"| Dapur
     Broker -->|"15b. [Subscribe] Cari Driver"| Kurir
     Kurir -.->|"16. [Push Notif] Driver Ditemukan"| Client
 
     Order -->|"[ALT] 17. [Publish] OrderExpired"| Broker
     Broker -->|"[ALT] 18. [Subscribe] Lepas Kunci Stok"| Dapur
+    Dapur -->|"[ALT] 18b. [Internal] TTL Habis Tanpa Event, Lepas Kunci"| Dapur
+    Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
+    Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
+
+```
+
+4. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
     Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
     Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
 ```
