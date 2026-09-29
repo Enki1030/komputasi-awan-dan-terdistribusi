@@ -56,56 +56,57 @@ Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — li
 Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkron) untuk mengurus operasional lanjutan. Service Pesanan tidak perlu lagi repot-repot menghubungi restoran atau mencari pengemudi; ia hanya menyiarkan satu event "Pesanan Lunas" ke dalam Message Broker dan tugas utamanya pun selesai. Service Dapur dan Service Kurir bertindak sebagai subscriber independen yang mengambil event tersebut dan mengeksekusinya secara paralel. Karena mereka dipisahkan oleh broker, jika tim kurir memutuskan untuk me-restart server mereka, tim resto tidak akan merasakan dampaknya dan tetap bisa menerima pesanan seperti biasa.
 
 2. Diagram:
-
 ```mermaid
-graph LR
-    %% Definisi Node
-    Client[Pelanggan]
-    Gateway[API Gateway]
-    Katalog[Service Katalog]
-    Order[Service Pesanan]
-    Payment[Service Pembayaran]
-    Broker[(Message Broker)]
-    Dapur[Service Dapur Resto]
-    Kurir[Service Kurir & Notif]
+sequenceDiagram
+    actor Client as Pelanggan
+    participant Gateway as API Gateway
+    participant Katalog as Service Katalog
+    participant Order as Service Pesanan
+    participant Payment as Service Pembayaran
+    participant Broker as Message Broker
+    participant Dapur as Service Dapur
+    participant Kurir as Service Kurir
 
-    Client -->|"1. [Request] Lihat Katalog (Sinkron)"| Gateway
-    Gateway -->|"2. [Request] Teruskan (Sinkron)"| Katalog
-    Katalog -.->|"3. [Response] Data Katalog (Sinkron)"| Gateway
-    Gateway -.->|"4. [Response] Tampilkan Menu (Sinkron)"| Client
+    Client->>Gateway: 1. [Request] Lihat Katalog
+    Gateway->>Katalog: 2. [Request] Teruskan
+    Katalog-->>Gateway: 3. [Response] Data Katalog
+    Gateway-->>Client: 4. [Response] Tampilkan Menu
 
-    Client -->|"5. [Request] Checkout (Sinkron)"| Gateway
-    Gateway -->|"6. [Request] Teruskan Checkout (Sinkron)"| Order
-    Order -->|"7. [Request] Cek & Kunci Stok (Sinkron)"| Dapur
+    Client->>Gateway: 5. [Request] Checkout
+    Gateway->>Order: 6. [Request] Teruskan Checkout
+    Order->>Dapur: 7. [Request] Cek & Kunci Stok
 
-    Dapur -.->|"🔴 8a. [Response] Stok Kosong"| Order
-    Order -.->|"🔴 8b. [Response] Gagal Checkout"| Gateway
-    Gateway -.->|"🔴 8c. [Response] Tampilkan 'Stok Habis'"| Client
+    alt [ALT] Stok Habis
+        rect rgb(255, 240, 240)
+        Dapur-->>Order: 8a. [Response] Stok Kosong
+        Order-->>Gateway: 8b. [Response] Gagal Checkout
+        Gateway-->>Client: 8c. [Response] Tampilkan 'Stok Habis'
+        end
+    else [UTAMA] Stok Ada
+        rect rgb(240, 255, 240)
+        Dapur-->>Order: 9a. [Response] Stok Dikunci
+        Order-->>Gateway: 9b. [Response] Buat Timer 5 Menit
+        Gateway-->>Client: 9c. [Response] Tampilkan Layar Bayar
 
-    Dapur -.->|"🟡 9a. [Response] Stok Dikunci"| Order
-    Order -.->|"🟡 9b. [Response] Buat Timer 5 Menit"| Gateway
-    Gateway -.->|"🟡 9c. [Response] Tampilkan Layar Bayar"| Client
+        Client->>Gateway: 10. [Request] Konfirmasi Bayar
+        Gateway->>Order: 11. [Request] Teruskan Bayar
+        Order->>Payment: 12. [Request] Potong Saldo
+        Payment-->>Order: 13. [Response] Saldo Terpotong
+        
+        Order-)Broker: 14. [Publish] OrderPaid
+        Broker-)Dapur: 15a. [Subscribe] Mulai Masak
+        Broker-)Kurir: 15b. [Subscribe] Cari Driver
+        Kurir-->>Client: 16. [Push Notif] Driver Ditemukan
+        end
+    end
 
-    Client -->|"🟡 10. [Request] Konfirmasi Bayar"| Gateway
-    Gateway -->|"🟡 11. [Request] Teruskan Bayar"| Order
-    Order -->|"🟡 12. [Request] Potong Saldo (Sinkron)"| Payment
-    Payment -.->|"🟡 13. [Response] Saldo Terpotong"| Order
-    
-    Order -->|"🟡 14. [Publish Event] OrderPaid"| Broker
-    Broker -->|"🟡 15a. [Subscribe] Mulai Masak"| Dapur
-    Broker -->|"🟡 15b. [Subscribe] Cari Driver"| Kurir
-    Kurir -.->|"🟡 16. [Push Notif] Driver Ditemukan"| Client
-
-    Order -->|"🔴 17. [Publish Event] OrderExpired"| Broker
-    Broker -->|"🔴 18. [Subscribe] Lepas Kunci Stok"| Dapur
-    Order -.->|"🔴 19. [Response] Status Expired"| Gateway
-    Gateway -.->|"🔴 20. [Response] Tampilkan 'Waktu Habis'"| Client
-
-    subgraph Legenda
-        L1[🟡 = Jalur Utama / Skenario Sukses]
-        L2[🔴 = Jalur Alternatif / Gagal / Timeout]
-        L3[Request = Permintaan Data atau Aksi]
-        L4[Response = Jawaban atau Kembalian Data]
+    opt [ALT] Waktu Bayar Habis (Timeout)
+        rect rgb(255, 240, 240)
+        Order-)Broker: 17. [Publish] OrderExpired
+        Broker-)Dapur: 18. [Subscribe] Lepas Kunci Stok
+        Order-->>Gateway: 19. [Response] Status Expired
+        Gateway-->>Client: 20. [Response] Tampilkan 'Waktu Habis'
+        end
     end
 ```
 
