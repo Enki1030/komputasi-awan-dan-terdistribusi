@@ -60,47 +60,59 @@ Setelah pembayaran dikonfirmasi, sistem  menggunakan Pub-Sub (komunikasi asinkro
 ```mermaid
 graph LR
     Client[Pelanggan]
+    Gateway[API Gateway]
+    Katalog[Service Katalog]
+    Order[Service Pesanan]
+    Payment[Service Pembayaran]
+    Broker[(Message Broker)]
+    Dapur[Service Dapur Resto]
+    Kurir[Service Kurir & Notif]
 
-    %% Alur SOA / API (Sinkron, Request-Response)
-    Client -->|"1. HTTP Request Katalog (Sinkron, Req-Res)"| Gateway[API Gateway]
-    Gateway -->|"2. Teruskan Request (Sinkron, Req-Res)"| Katalog[Service Katalog]
+    %% ---------------------------------------
+    %% FASE 1: KATALOG (SOA)
+    %% ---------------------------------------
+    Client -->|"1. Request Katalog (Sinkron)"| Gateway
+    Gateway -->|"2. Forward Request (Sinkron)"| Katalog
+    Katalog -.->|"3. Respon Data Katalog (Sinkron)"| Gateway
+    Gateway -.->|"4. Tampilkan Menu (Sinkron)"| Client
 
-    Katalog -.->|"2a. Respons Data Katalog (Sinkron, Req-Res)"| Gateway
-    Gateway -.->|"2b. Tampilkan Katalog/Menu (Sinkron, Req-Res)"| Client
+    %% ---------------------------------------
+    %% FASE 2: CHECKOUT & CEK STOK (SOA)
+    %% ---------------------------------------
+    Client -->|"5. HTTP Checkout (Sinkron)"| Gateway
+    Gateway -->|"6. Forward Checkout (Sinkron)"| Order
+    Order -->|"7. Cek & Kunci Stok (Sinkron)"| Dapur
     
-    Client -->|"3. HTTP Checkout (Sinkron, Req-Res)"| Gateway
-    Gateway -->|"4. Teruskan Checkout (Sinkron, Req-Res)"| Order[Service Pesanan]
-    
-    Order -->|"5. Potong Saldo (Sinkron, Req-Res)"| Payment[Service Pembayaran]
-    
-    %% Catatan untuk ketahanan SOA kita ubah menjadi kotak label biasa
-    Note1[Catatan: Pasang Timeout & Circuit Breaker di sini]
-    Order -.- Note1
-    
-    Payment -.->|"6. Respons: Saldo Terpotong (Sinkron, Req-Res)"| Order
-    Order -.->|"7. Respons ke Klien: Pembayaran Berhasil (Sinkron, Req-Res)"| Gateway
-    Gateway -.->|"8. Tampilkan Layar Berhasil (Sinkron, Req-Res)"| Client
+    %% >> SKENARIO A: STOK HABIS <<
+    Dapur -.->|"8a. [STOK HABIS] Respon Stok Kosong"| Order
+    Order -.->|"8b. [STOK HABIS] Respon Gagal Checkout"| Gateway
+    Gateway -.->|"8c. Tampilkan Notif 'Stok Habis'"| Client
 
-    %% Alur Pub-Sub (Asinkron, Event-Driven)
-    Order -->|"9. Publish 'PaymentConfirmed' (Asinkron, Event)"| Broker[(Message Broker)]
+    %% >> SKENARIO B: STOK ADA (Lanjut ke Timer Bayar) <<
+    Dapur -.->|"9a. [STOK ADA] Stok Dikunci"| Order
+    Order -.->|"9b. Buat Order (PENDING_PAYMENT) & Timer"| Gateway
+    Gateway -.->|"9c. Tampilkan Layar Bayar & Timer 5 Mnt"| Client
+
+    %% ---------------------------------------
+    %% FASE 3A: BAYAR SUKSES SEBELUM TIMEOUT (SOA -> PubSub)
+    %% ---------------------------------------
+    Client -->|"10. Konfirmasi Bayar (Sebelum Expired)"| Gateway
+    Gateway -->|"11. Forward Instruksi Bayar"| Order
+    Order -->|"12. Eksekusi Potong Saldo (Sinkron)"| Payment
+    Payment -.->|"13. Respon Saldo Terpotong Sukses"| Order
     
-    %% Catatan Risiko Crash kita hubungkan dengan garis putus-putus
-    Note2[Risiko: Jika Order crash sblm poin 9, event hilang. Perlu Outbox Pattern]
-    Order -.- Note2
+    Order -->|"14. Publish Event 'OrderPaid'"| Broker
+    Broker -->|"15a. Subscribe 'OrderPaid' (Mulai Masak)"| Dapur
+    Broker -->|"15b. Subscribe 'OrderPaid' (Cari Driver)"| Kurir
+    Kurir -.->|"16. Push Notif 'Driver Ditemukan'"| Client
 
-    Broker -->|"10a. Subscribe Event"| Dapur[Service Dapur Resto]
-    Broker -->|"10b. Subscribe Event"| Kurir[Service Kurir & Notif]
-    
-    Note3[Catatan Dapur: Wajib Idempoten untuk cegah masak 2x]
-    Dapur -.- Note3
-
-    %% Penyampaian Notifikasi ke Klien
-    Kurir -.->|"11. Push Notif via WebSocket (Asinkron, Event)"| Client
-
-    %% Jalur Kompensasi (Saga) Jika Dapur Menolak
-    Dapur -->|"12. Publish 'OrderRejected' (Asinkron, Event)"| Broker
-    Broker -->|"13a. Subscribe Event (Trigger Refund)"| Payment
-    Broker -->|"13b. Subscribe Event (Batal Cari Kurir)"| Kurir
+    %% ---------------------------------------
+    %% FASE 3B: SKENARIO TIMEOUT (Batal Bayar)
+    %% ---------------------------------------
+    Order -->|"17. [TIMEOUT] Waktu Habis / Pelanggan Batal"| Broker
+    Broker -->|"18. Subscribe 'OrderExpired' -> Lepas Kunci Stok"| Dapur
+    Order -.->|"19. Status Order: Expired"| Gateway
+    Gateway -.->|"20. Tampilkan Notif 'Waktu Bayar Habis'"| Client
 ```
 
 3. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
