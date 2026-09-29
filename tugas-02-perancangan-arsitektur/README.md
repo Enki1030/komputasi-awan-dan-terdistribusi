@@ -108,19 +108,19 @@ graph LR
 
     1. **Melihat Menu Makanan (1 – 4)**
     Pelanggan membuka fitur katalog untuk memilih makanan. Aplikasi mengirim permintaan melalui API Gateway lalu diteruskan langsung ke Service Katalog secara sinkron.Service Katalog langsung membalas dengan mengirimkan data menu terbaru ke API Gateway hingga muncul di halaman pelanggan.
-    <br>
+    
     2. **Checkout & Pengecekan Stok (5 – 7)**
     Ketika pelanggan menekan tombol checkout, permintaan dikirim melalui API Gateway menuju ke Service Pesanan.Sebelum meminta pelanggan membayar, Service Pesanan menghubungi Service Dapur Resto secara langsung (sinkron) untuk mengecek apakah ada tersedianya menu dan menguncinya sementara agar tidak diambil pembeli lain.
-    <br>
+    
     3. **Jika stock habis (8a - 8c)**
     Apabila Service Dapur Resto mengecek stok menu tersebut habis, Dapur langsung mengirimkan data dengan pesan "Stok Kosong" ke Service Pesanan. Service Pesanan kemudian melanjutkan pesan gagal ke API Gateway, sehingga di halaman checkout pelanggan menampilkan pemberitahuan bahwa stok habis. 
-    <br>
+    
     4. **Alur Siap Bayar dan Timer Pembayaran (9a - 9c)**
     Jika stok menu makanan tersedia, Service Dapur Resto akan mengunci stok tersebut dan mengaktifkan *Timer TTL* (*Time-To-Live*) mandiri (contohnya 5,5 menit) sebagai pelapis pengaman internal. Di saat yang sama, Service Pesanan membuat status pesanan baru (`PENDING_PAYMENT`) dan membuat timer pembayaran pelanggan (5 menit) ke API Gateway untuk ditampilkan di halaman pembayaran.
-    <br>
+    
     5. **Pembayaran Berhasil (10 - 16)**
     jika pelanggan mengonfirmasi pembayaran sebelum waktu *timeout* habis, Service Pesanan langsung memanggil Service Pembayaran secara sinkron untuk memotong saldo. Setelah saldo berhasil dipotong, Service Pesanan menaruh pesan `OrderPaid` ke dalam Message Broker secara asinkron.Service Dapur Resto dan Service Kurir mengambil pesan tersebut dari Broker secara bersamaan. Saat menerima pesan tersebut, Service Dapur Resto mematikan timer TTL-nya dan mulai memasak makanan, sedangkan Kurir mulai mencari pengemudi terdekat lalu mengabari pelanggan lewat notifikasi.
-    <br>
+    
     6. **Jika Waktu Bayar Habis  (17 - 20)**
     Jika pelanggan tidak melakukan pembayaran sampai batas waktu *timeout* habis, Service Pesanan mengirim pesan `OrderExpired` ke dalam Message Broker secara asinkron agar Service Dapur Resto membaca pesan tersebut dan melepas kuncian stok. Namun, jika terjadi gangguan jaringan atau Service Pesanan mengalami *crash* sehingga gagal mengirimkan pesan pembatalan, timer _TTL_ mandiri di Service Dapur Resto akan otomatis habis dan melepas kuncian stok secara mandiri tanpa bergantung pada Service Pesanan. Di waktu yang sama, aplikasi menampilkan pemberitahuan ke pelanggan bahwa waktu pembayaran telah habis, tanpa ada saldo yang terpotong sedikit pun.
     <br>
