@@ -78,7 +78,7 @@ graph LR
     Order -.- Note1
     
     Payment -.->|"6. Respons: Saldo Terpotong (Sinkron, Req-Res)"| Order
-    Order -.->|"7. Respons ke Klien: Pembayaran Berhasil (Sinkron, Req-Res)"| Gateaway
+    Order -.->|"7. Respons ke Klien: Pembayaran Berhasil (Sinkron, Req-Res)"| Gateway
     Gateway -.->|"8. Tampilkan Layar Berhasil (Sinkron, Req-Res)"| Client
 
     %% Alur Pub-Sub (Asinkron, Event-Driven)
