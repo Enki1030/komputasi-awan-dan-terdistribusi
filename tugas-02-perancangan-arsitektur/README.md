@@ -64,54 +64,41 @@ graph LR
     Broker[(Message Broker)]
     Dapur[Service Dapur Resto]
     Kurir[Service Kurir & Notif]
+     
+    Client -->|"1. [Request] Lihat Katalog"| Gateway
+    Gateway -->|"2. [Request] Teruskan"| Katalog
+    Katalog -.->|"3. [Response] Data Katalog"| Gateway
+    Gateway -.->|"4. [Response] Tampilkan Menu"| Client
 
-    %% ---------------------------------------
-    %% FASE 1: KATALOG (SOA)
-    %% ---------------------------------------
-    Client -->|"1. Request Katalog (Sinkron)"| Gateway
-    Gateway -->|"2. Forward Request (Sinkron)"| Katalog
-    Katalog -.->|"3. Respon Data Katalog (Sinkron)"| Gateway
-    Gateway -.->|"4. Tampilkan Menu (Sinkron)"| Client
+    Client -->|"5. [Request] Checkout"| Gateway
+    Gateway -->|"6. [Request] Teruskan Checkout"| Order
+    Order -->|"7. [Request] Cek & Kunci Stok"| Dapur
 
-    %% ---------------------------------------
-    %% FASE 2: CHECKOUT & CEK STOK (SOA)
-    %% ---------------------------------------
-    Client -->|"5. HTTP Checkout (Sinkron)"| Gateway
-    Gateway -->|"6. Forward Checkout (Sinkron)"| Order
-    Order -->|"7. Cek & Kunci Stok (Sinkron)"| Dapur
+    Dapur -.->|"[ALT] 8a. [Response] Stok Kosong"| Order
+    Order -.->|"[ALT] 8b. [Response] Gagal Checkout"| Gateway
+    Gateway -.->|"[ALT] 8c. [Response] Tampilkan 'Stok Habis'"| Client
+
+    Dapur -.->|"9a. [Response] Stok Dikunci (Mulai TTL 60 Detik)"| Order
+    Dapur -.->|"9a. [Response] Stok Dikunci"| Order
+    Order -.->|"9b. [Response] Buat Timer 5 Menit"| Gateway
+    Gateway -.->|"9c. [Response] Tampilkan Layar Bayar"| Client
+
+    Client -->|"10. [Request] Konfirmasi Bayar"| Gateway
+    Gateway -->|"11. [Request] Teruskan Bayar"| Order
+    Order -->|"12. [Request] Potong Saldo"| Payment
+    Payment -.->|"13. [Response] Saldo Terpotong"| Order
     
-    %% >> SKENARIO A: STOK HABIS <<
-    Dapur -.->|"8a. [STOK HABIS] Respon Stok Kosong"| Order
-    Order -.->|"8b. [STOK HABIS] Respon Gagal Checkout"| Gateway
-    Gateway -.->|"8c. Tampilkan Notif 'Stok Habis'"| Client
+    Order -->|"14. [Publish] OrderPaid"| Broker
+    Broker -->|"15a. [Subscribe] Mulai Masak (Batalkan TTL)"| Dapur
+    Broker -->|"15a. [Subscribe] Mulai Masak"| Dapur
+    Broker -->|"15b. [Subscribe] Cari Driver"| Kurir
+    Kurir -.->|"16. [Push Notif] Driver Ditemukan"| Client
 
-    %% >> SKENARIO B: STOK ADA (Lanjut ke Timer Bayar) <<
-    Dapur -.->|"9a. [STOK ADA] Stok Dikunci"| Order
-    Order -.->|"9b. Buat Order (PENDING_PAYMENT) & Timer"| Gateway
-    Gateway -.->|"9c. Tampilkan Layar Bayar & Timer 5 Mnt"| Client
-
-    %% ---------------------------------------
-    %% FASE 3A: BAYAR SUKSES SEBELUM TIMEOUT (SOA -> PubSub)
-    %% ---------------------------------------
-    Client -->|"10. Konfirmasi Bayar (Sebelum Expired)"| Gateway
-    Gateway -->|"11. Forward Instruksi Bayar"| Order
-    Order -->|"12. Eksekusi Potong Saldo (Sinkron)"| Payment
-    Payment -.->|"13. Respon Saldo Terpotong Sukses"| Order
-    
-    Order -->|"14. Publish Event 'OrderPaid'"| Broker
-    Broker -->|"15a. Subscribe 'OrderPaid' (Mulai Masak)"| Dapur
-    Broker -->|"15b. Subscribe 'OrderPaid' (Cari Driver)"| Kurir
-    Kurir -.->|"16. Push Notif 'Driver Ditemukan'"| Client
-
-    %% ---------------------------------------
-    %% FASE 3B: SKENARIO TIMEOUT (Batal Bayar)
-    %% ---------------------------------------
-    Order -->|"17. [TIMEOUT] Waktu Habis / Pelanggan Batal"| Broker
-    Broker -->|"18. Subscribe 'OrderExpired' -> Lepas Kunci Stok"| Dapur
-    Order -.->|"19. Status Order: Expired"| Gateway
-    Gateway -.->|"20. Tampilkan Notif 'Waktu Bayar Habis'"| Client
+    Order -->|"[ALT] 17. [Publish] OrderExpired"| Broker
 ```
 <br>
+
+ 
 
 3. ****Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):****
     <br>
@@ -160,38 +147,6 @@ graph LR
         Data di seluruh layanan tidak terbarui secara instan dalam satu transaksi database tunggal, melainkan secara bertahap. Terdapat jeda beberapa milidetik hingga detik dari saat Service Pesanan menyatakan `OrderPaid` sampai Service Kurir menerima pesan tersebut dan mengalokasikan pengemudi.
     
 
-
-    
-    Client -->|"1. [Request] Lihat Katalog"| Gateway
-    Gateway -->|"2. [Request] Teruskan"| Katalog
-    Katalog -.->|"3. [Response] Data Katalog"| Gateway
-    Gateway -.->|"4. [Response] Tampilkan Menu"| Client
-
-    Client -->|"5. [Request] Checkout"| Gateway
-    Gateway -->|"6. [Request] Teruskan Checkout"| Order
-    Order -->|"7. [Request] Cek & Kunci Stok"| Dapur
-
-    Dapur -.->|"[ALT] 8a. [Response] Stok Kosong"| Order
-    Order -.->|"[ALT] 8b. [Response] Gagal Checkout"| Gateway
-    Gateway -.->|"[ALT] 8c. [Response] Tampilkan 'Stok Habis'"| Client
-
-    Dapur -.->|"9a. [Response] Stok Dikunci (Mulai TTL 60 Detik)"| Order
-    Dapur -.->|"9a. [Response] Stok Dikunci"| Order
-    Order -.->|"9b. [Response] Buat Timer 5 Menit"| Gateway
-    Gateway -.->|"9c. [Response] Tampilkan Layar Bayar"| Client
-
-    Client -->|"10. [Request] Konfirmasi Bayar"| Gateway
-    Gateway -->|"11. [Request] Teruskan Bayar"| Order
-    Order -->|"12. [Request] Potong Saldo"| Payment
-    Payment -.->|"13. [Response] Saldo Terpotong"| Order
-    
-    Order -->|"14. [Publish] OrderPaid"| Broker
-    Broker -->|"15a. [Subscribe] Mulai Masak (Batalkan TTL)"| Dapur
-    Broker -->|"15a. [Subscribe] Mulai Masak"| Dapur
-    Broker -->|"15b. [Subscribe] Cari Driver"| Kurir
-    Kurir -.->|"16. [Push Notif] Driver Ditemukan"| Client
-
-    Order -->|"[ALT] 17. [Publish] OrderExpired"| Broker
     Broker -->|"[ALT] 18. [Subscribe] Lepas Kunci Stok"| Dapur
     Dapur -->|"[ALT] 18b. [Internal] TTL Habis Tanpa Event, Lepas Kunci"| Dapur
     Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
