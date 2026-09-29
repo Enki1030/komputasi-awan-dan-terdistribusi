@@ -94,7 +94,7 @@ graph LR
 
     Order -->|"[ALT] 17. [Publish] OrderExpired"| Broker
     Broker -->|"[ALT] 18. [Subscribe] Lepas Kunci Stok"| Dapur
-    Dapur -->|"[ALT] 18b. [Internal] TTL Habis Tanpa Kabar, Lepas Kunci"| Dapur
+    Dapur -->|"[ALT] 18b. [Internal] TTL Habis Tanpa Event, Lepas Kunci"| Dapur
     Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
     Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
 
