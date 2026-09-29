@@ -125,23 +125,24 @@ graph LR
     Jika pelanggan tidak melakukan pembayaran sampai batas waktu *timeout* habis, Service Pesanan mengirim pesan `OrderExpired` ke dalam Message Broker secara asinkron agar Service Dapur Resto membaca pesan tersebut dan melepas kuncian stok. Namun, jika terjadi gangguan jaringan atau Service Pesanan mengalami *crash* sehingga gagal mengirimkan pesan pembatalan, timer _TTL_ mandiri di Service Dapur Resto akan otomatis habis dan melepas kuncian stok secara mandiri tanpa bergantung pada Service Pesanan. Di waktu yang sama, aplikasi menampilkan pemberitahuan ke pelanggan bahwa waktu pembayaran telah habis, tanpa ada saldo yang terpotong sedikit pun.
     <br>
 
+
 4. ****Analisis Solusi Coupling dan Trade-Off Arsitektur****
     1. **mengatasi masalah Coupling** 
         1. **Eliminasi Single Point of Failure (SPOF):**
          Pada arsitektur _monolitik_, seluruh modul berjalan dalam satu unit deployment.Jika modul kurir mengalami crash atau pembaruan (deploy ulang), seluruh aplikasi FoodGo ikut down. Dengan memisahkan setiap modul ke service independen, kegagalan pada Service Kurir & Notif tidak akan melumpuhkan Service Dapur Resto atau Service Pesanan.
-        <br>
+
         2. **Pemisahan Alur Operasional (Loose Coupling via Message Broker):**
-        Pada sistem lama, modul pesanan harus memanggil modul dapur dan kurir satu per satu secara langsung.Dalam arsitektur baru, Service Pesanan cukup menyiarkan event (OrderPaid atau OrderExpired) ke Message Broker secara _fire-and-forget_. Service Dapur Resto dan Service Kurir mengambil pesan tersebut secara independen di latar belakang tanpa saling menunggu atau saling mengetahui keberadaan masing-masing.
-        <br>
+        Pada sistem lama, modul pesanan harus memanggil modul dapur dan kurir satu per satu secara langsung. Dalam arsitektur baru, Service Pesanan cukup menyiarkan event (OrderPaid atau OrderExpired) ke Message Broker secara _fire-and-forget_. Service Dapur Resto dan Service Kurir mengambil pesan tersebut secara independen di latar belakang tanpa saling menunggu satu sama lain.
+
         3. **Pencegahan Transaksi Gagal di Awal:**
-        Penerapan SOA (sinkron) saat checkout untuk mengecek dan mengunci stok di Dapur sebelum saldo dipotong mencegah terjadinya pemotongan uang untuk barang yang sudah habis. Hal ini menghilangkan ketergantungan antar-layanan yang berisiko memicu proses pengembalian dana (refund) yang rumit di kemudian hari.
-    <br>    
+        Penerapan SOA (sinkron) saat checkout untuk mengecek dan mengunci stok di Dapur sebelum saldo dipotong, mencegah terjadinya pemotongan uang untuk barang yang sudah habis. Hal ini menghilangkan ketergantungan antar-layanan yang berisiko memicu proses pengembalian dana (refund) yang rumit.
+
     2. **Trade-Off**
         1. **Manajemen Penguncian Stok & Timer TTL Dual-Layer:**
-        Karena stok dikunci sebelum pembayaran, sistem berisiko mengalami _stuck/leaked_ pemesanan jika pelanggan tidak jadi membayar. Untuk mengatasinya, diterapkan logika ganda: Service Pesanan mengirim event `OrderExpired` jika timeout (5 menit), dan Service Dapur Resto memasang _Timer_ _TTL_ (_Time-To-Live_) mandiri (contohnya 5,5 menit) sebagai pelapis pengaman (_fallback_). Kompleksitasnya terletak pada penanganan _race condition_ contohnya jika pembayaran berhasil di detik terakhir bersamaan dengan stok yang terlepas oleh TTL.
+        Karena stok dikunci sebelum pembayaran, sistem berisiko mengalami _stuck/leaked_ pemesanan jika pelanggan tidak jadi membayar. Untuk mengatasinya, diterapkan logika ganda: Service Pesanan mengirim event `OrderExpired` jika timeout (5 menit), dan Service Dapur Resto memasang _Timer_ _TTL_ (_Time-To-Live_) mandiri (contohnya 1 menit) sebagai pelapis pengaman (_fallback_). Kompleksitasnya terletak pada penanganan _race condition_ contohnya jika pembayaran berhasil di detik terakhir bersamaan dengan stok yang terlepas oleh TTL.
 
         2. **Kesulitan Debugging dan Observability:**
-        Alur komunikasi berbasis _Publish-Subscribe_ bersifat asinkron dan tidak linier.Jika notifikasi kurir gagal terkirim atau pesan tersendat di broker, pengembang tidak bisa lagi melacak _log_ di satu tempat. Sistem membutuhkan infrastruktur _Distributed Tracing_ tambahan (seperti Jaeger/Zipkin) untuk melacak alur perjalanan pesan dari ujung ke ujung.
+        Alur komunikasi berbasis _Publish-Subscribe_ bersifat asinkron dan tidak linier. Jika notifikasi kurir gagal terkirim atau pesan tersendat di broker, pengembang tidak bisa lagi melacak _log_ di satu tempat. Sistem membutuhkan infrastruktur _Distributed Tracing_ tambahan (seperti Jaeger/Zipkin) untuk melacak alur perjalanan pesan dari ujung ke ujung.
 
         3. **Ketergantungan pada Message Broker & Kebutuhan Idempotency:**
         Menambahkan Message Broker (seperti RabbitMQ atau Kafka) menambah satu komponen infrastruktur kritis baru yang wajib selalu aktif (_high availability_). Selain itu, karena koneksi jaringan asinkron berisiko mengirimkan pesan ganda (_duplicate message_), Service Dapur Resto wajib dibuat idempotent (memiliki mekanisme cek `order_id`) agar tidak memasak makanan yang sama dua kali.
