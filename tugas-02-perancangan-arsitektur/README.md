@@ -79,6 +79,7 @@ graph LR
     Gateway -.->|"[ALT] 8c. [Response] Tampilkan 'Stok Habis'"| Client
 
     Dapur -.->|"9a. [Response] Stok Dikunci (Mulai TTL 60 Detik)"| Order
+    Dapur -.->|"9a. [Response] Stok Dikunci"| Order
     Order -.->|"9b. [Response] Buat Timer 5 Menit"| Gateway
     Gateway -.->|"9c. [Response] Tampilkan Layar Bayar"| Client
 
@@ -89,6 +90,7 @@ graph LR
     
     Order -->|"14. [Publish] OrderPaid"| Broker
     Broker -->|"15a. [Subscribe] Mulai Masak (Batalkan TTL)"| Dapur
+    Broker -->|"15a. [Subscribe] Mulai Masak"| Dapur
     Broker -->|"15b. [Subscribe] Cari Driver"| Kurir
     Kurir -.->|"16. [Push Notif] Driver Ditemukan"| Client
 
@@ -101,6 +103,12 @@ graph LR
 ```
 
 4. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
+    Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
+    Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
+```
+
+
+3. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
     1. Fase Inisiasi dan Katalog
         Proses diawali ketika klien (pelanggan) mengakses antarmuka aplikasi untuk memuat daftar menu restoran. Klien mengirimkan permintaan melalui API Gateway, yang kemudian diteruskan ke Service Katalog menggunakan komunikasi sinkron berbasis request-response.             Pendekatan sinkron pada fase ini penting untuk menjamin klien memperoleh representasi data yang paling aktual secara real-time.
 
