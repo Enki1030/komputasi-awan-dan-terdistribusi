@@ -14,7 +14,9 @@
 - Opsi arsitektur yang dipertimbangkan: Merubah agar menggunakan hibrid, SOA dan Publish Subscribe. 
 - Kenapa akhirnya pilih SOA & Pub-Sub:  Karena SOA dinilai aman, tetapi sangat lambat karena memerlukan pesan dua arah berupa request dan response. jadi untuk proses yang memerlukan kecepatan seperti Service dapur untuk memproses pesanan, di perlukan sistem Pub-Sub yang cepat. 
 - Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa): Merubah keseluruhan diagram nya untuk menerapkan hibrida (SOA untuk Service Pesanan, Katalog, Pembayaran yang membutuhkan keandalan dan keamanan dan Pub-Sub untuk Service Dapur dan Service Kurir yang membutuhkan kecepatan)
+Bukti:
 
+![Bukti 2](tugas-02-perancangan-arsitektur/bukti/2026-09-29 10.00.png)
 link refrensi: 
 - https://binus.ac.id/bekasi/2025/07/service-oriented-architecture/
 - https://aws.amazon.com/id/what-is/service-oriented-architecture/
