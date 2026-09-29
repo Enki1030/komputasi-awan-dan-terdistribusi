@@ -101,30 +101,3 @@ graph LR
     Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
 
 ```
-
-4. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
-    Order -.->|"[ALT] 19. [Response] Status Expired"| Gateway
-    Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
-```
-
-
-3. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
-    1. Fase Inisiasi dan Katalog
-        Proses diawali ketika klien (pelanggan) mengakses antarmuka aplikasi untuk memuat daftar menu restoran. Klien mengirimkan permintaan melalui API Gateway, yang kemudian diteruskan ke Service Katalog menggunakan komunikasi sinkron berbasis request-response.             Pendekatan sinkron pada fase ini penting untuk menjamin klien memperoleh representasi data yang paling aktual secara real-time.
-
-    2. Fase Pemesanan dan Validasi Pembayaran
-        Saat klien checkout, request dikirimkan secara sinkron (request-response) melalui API Gateway menuju Service Pesanan. Untuk menjamin validitas transaksi, Service Pesanan selanjutnya melakukan pemanggilan langsung ke Service Pembayaran secara sinkron          (request-response).
-        Sifat sinkron pada titik ini penting karena sistem membutuhkan kepastian terkait pemotongan saldo. Apabila Service Pembayaran menolak transaksi atau mengalami timeout, Service Pesanan akan langsung menggagalkan alur tersebut dan mengembalikan respons         kegagalan (error response) kepada klien melalui API Gateway. Pada tahap ini, klien menerima notifikasi "Pembayaran Berhasil" atau "Gagal".
-
-    3. Transisi Alur Komunikasi
-        Pasca-keberhasilan pemotongan saldo, arsitektur secara fundamental bertransisi ke pola Publish-Subscribe. Service Pesanan tidak lagi melakukan pemanggilan langsung ke modul lain, melainkan memublikasikan sebuah pesan event dengan label PaymentConfirmed ke dalam Message Broker. Komunikasi ini bersifat asinkron berbasis event. Setelah event terkirim, Service Pesanan segera menyelesaikan beban kerjanya (fire-and-forget).
-
-    4. Pemrosesan Operasional
-        Di sisi lain dari Message Broker, Service Dapur Resto dan Service Kurir beroperasi sebagai subscriber yang sepenuhnya terisolasi satu sama lain. Keduanya mengonsumsi event PaymentConfirmed dari broker secara asinkron (event-driven).
-Pemisahan ini memungkinkan kedua layanan bekerja secara paralel: restoran mulai menyiapkan makanan, sementara sistem kurir mulai melakukan penugasan (dispatching) pengemudi. Kegagalan atau latensi pada sistem pencarian kurir tidak akan mengganggu atau menunda operasional dapur resto.
-
-    5. Pengiriman Pembaruan Status ke Klien
-        Setelah Service Kurir berhasil mengalokasikan pengemudi, pembaruan status (misalnya: "Kurir sedang menuju restoran") didorong kembali ke perangkat klien. Proses ini tidak menggunakan jalur request-response tradisional melalui API Gateway, melainkan dikirimkan secara asinkron berbasis event menggunakan protokol push notification (seperti WebSocket), yang memungkinkan sistem memperbarui antarmuka pengguna di latar belakang.
-
-    6. Jalur Kompensasi / Alternatif
-        Dalam skenario pengecualian, sebagai contoh, apabila stok bahan baku habis, Service Dapur tidak dapat merespons klien secara langsung. Sebagai mitigasi, Service Dapur akan memublikasikan event balasan OrderRejected ke dalam Message Broker secara asinkron. Event ini selanjutnya akan dikonsumsi oleh Service Pembayaran untuk mengeksekusi pengembalian dana (refund) secara otomatis, serta Service Kurir akan menghentikan proses pencarian pengemudi.
