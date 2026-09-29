@@ -55,6 +55,7 @@ Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — li
 
 2. Diagram:
 
+```mermaid
 graph LR
     Client[Pelanggan]
     Gateway[API Gateway]
@@ -99,7 +100,7 @@ graph LR
     Gateway -.->|"[ALT] 20. [Response] Tampilkan 'Waktu Habis'"| Client
 
 
-3. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
+4. Skenario pemesanan makanan pada sistem FoodGo dengan menggunakan pendekatan hibrida (SOA dan Publish-Subscribe):
     1. Fase Inisiasi dan Katalog
         Proses diawali ketika klien (pelanggan) mengakses antarmuka aplikasi untuk memuat daftar menu restoran. Klien mengirimkan permintaan melalui API Gateway, yang kemudian diteruskan ke Service Katalog menggunakan komunikasi sinkron berbasis request-response.             Pendekatan sinkron pada fase ini penting untuk menjamin klien memperoleh representasi data yang paling aktual secara real-time.
 
