@@ -64,6 +64,9 @@ graph TD
     %% Alur SOA / API (Sinkron, Request-Response)
     Client -->|"1. HTTP Request Katalog (Sinkron, Req-Res)"| Gateway[API Gateway]
     Gateway -->|"2. Teruskan Request (Sinkron, Req-Res)"| Katalog[Service Katalog]
+
+    Katalog -.->|"2a. Respons Data Katalog (Sinkron, Req-Res)"| Gateway
+    Gateway -.->|"2b. Tampilkan Katalog/Menu (Sinkron, Req-Res)"| Client
     
     Client -->|"3. HTTP Checkout (Sinkron, Req-Res)"| Gateway
     Gateway -->|"4. Teruskan Checkout (Sinkron, Req-Res)"| Order[Service Pesanan]
