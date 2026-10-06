@@ -17,7 +17,7 @@ NUM_WORKERS = 10        # jumlah thread pekerja
 processed_count = 0
 
 # TODO 1: Buat objek Lock di sini untuk melindungi `processed_count`.
-# lock = threading.Lock()
+lock = threading.Lock()
 
 
 def process_order(order_id: int) -> None:
@@ -33,7 +33,8 @@ def process_order(order_id: int) -> None:
     # Langkah 2: bungkus increment dengan `with lock:` dan buktikan hasilnya
     #            selalu tepat NUM_ORDERS. Simpan bukti kedua kondisi ini
     #            di JURNAL.md / folder bukti/.
-    pass
+    with lock:
+        processed_count += 1    
 
 
 def worker(order_ids: list) -> None:
@@ -50,6 +51,22 @@ def main() -> None:
     # start semua thread, lalu join semua thread sebelum lanjut.
     threads = []
     # ... isi logika pembagian tugas & pembuatan thread di sini ...
+    
+    # menghitung ukuran tiap chunk supaya terbagai rata
+    chunk_size = len(order_ids) // NUM_WORKERS
+    
+    for i in range(NUM_WORKERS):
+        
+        # menentukan start dan end index untuk tiap chunk
+        start_index = i * chunk_size
+        
+        # pastikan chunk terakhir mengambil sisa order_ids
+        end_index = (i + 1) * chunk_size if i < NUM_WORKERS - 1 else len(order_ids)
+        chunk = order_ids[start_index:end_index]
+        
+        t = threading.Thread(target=worker, args=(chunk,))
+        threads.append(t)
+        t.start()
 
     for t in threads:
         t.join()
