@@ -34,7 +34,10 @@ def process_order(order_id: int) -> None:
     #            selalu tepat NUM_ORDERS. Simpan bukti kedua kondisi ini
     #            di JURNAL.md / folder bukti/.
     with lock:
-        processed_count += 1    
+
+        current_count = processed_count
+        time.sleep(0.0001)  # simulasi
+        processed_count = current_count + 1
 
 
 def worker(order_ids: list) -> None:
