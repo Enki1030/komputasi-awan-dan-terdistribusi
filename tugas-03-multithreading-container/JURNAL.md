@@ -21,7 +21,7 @@ Bezaliel : Todo 1 dan 3 Python
 - Poin diskusi: Membahas soal perbedaan hasil dengan yang seharusnya. Awal nya kami menjalankan tanpa lock dan tidak terjadi race condition. tetapi setelah menambahkan time sleep di todo 2, kami berhasil mendapatkan situasi race condition untuk tanpa lock.
 - Perbedaan pendapat (jika ada): Tidak ada. 
 
-![Pertemuan](bukti\pertemuan-2026-10-06-212831.png)
+![Pertemuan](bukti/pertemuan-2026-10-06-212831.png)
 ## Percobaan tanpa Lock
 - Hasil `processed_count` yang didapat: ...
 - Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri): ...
@@ -31,10 +31,10 @@ Bezaliel : Todo 1 dan 3 Python
 Pesanan 100 baik di jalankan pakai python langsung maupun pakai docker. 
 
 Dengan python:
-![Python](.\bukti\withlock(python).png)
+![Python](bukti/withlock(python).png)
 
 Dengan docker:
-![Docker](.\bukti\withlock(docker).png)
+![Docker](bukti/withlock(docker).png)
 
 Berdasarkan hasil eksekusi diatas, kita dapat lihat bahwa ketika kita membungkus perhitungan dengan with lock, kita pada dasarnya memberlakukan sistem antrean tunggal yang ketat (Mutual Exclusion). Baik program ini dijalankan di laptop secara langsung (Menggunakan python) atau di dalam Docker, aturannya tetap berlaku.
 
