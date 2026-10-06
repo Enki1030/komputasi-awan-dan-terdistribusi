@@ -21,7 +21,7 @@ Bezaliel : Todo 1 dan 3 Python
 - Poin diskusi: Membahas soal perbedaan hasil dengan yang seharusnya. Awal nya kami menjalankan tanpa lock dan tidak terjadi race condition. tetapi setelah menambahkan time sleep di todo 2, kami berhasil mendapatkan situasi race condition untuk tanpa lock.
 - Perbedaan pendapat (jika ada): Tidak ada. 
 
-![Pertemuan](.\bukti\pertemuan-2026-10-06-212831.png)
+![Pertemuan](..\bukti\pertemuan-2026-10-06-212831.png)
 ## Percobaan tanpa Lock
 - Hasil `processed_count` yang didapat: ...
 - Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri): ...
