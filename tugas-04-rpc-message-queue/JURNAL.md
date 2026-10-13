@@ -29,13 +29,13 @@ data saldo_user hanya disimpan di dalam memori/RAM dan bukan di database permane
 Apabila server mati setelah mengurangi saldo tetapi sebelum mengirim respons ke client, client akan menganggap transaksi tersebut gagal dikarenakan menerima pesan error. Jika client mencoba melakukan pembayaran ulang, hal ini bisa menyebabkan saldo terpotong dua kali.
  
 ### Bukti
-**1.Bukti Menjalankan Server **
-![Server.py](bukti/Bukti-Server-py,png)
+** 1.Bukti Menjalankan Server **
+![Server.py](bukti/Bukti-Server-py.png)
 
-**2. Bukti Menjalankan Client **
+** 2. Bukti Menjalankan Client **
 ![Client.py](bukti/Bukti-client-py.png)
 
-**3. Bukti Kondisi Server Mati
+** 3. Bukti Kondisi Server Mati
 
 ![Server Mati](bukti/Bukti_ketika_Server_Mati.png)
 
