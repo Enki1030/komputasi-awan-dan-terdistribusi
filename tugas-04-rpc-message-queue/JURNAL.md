@@ -3,12 +3,12 @@
 ## Diskusi Tanggal 12-Oktober-2026
 Diksusi = Membahas Pembagian tugas untuk pengerjaan kelompok. Niko bagian pengerjaan kode, dan Liel bagian pengerjaan penjelasan di jurnal nya. 
 
-![Bukti Hari 1](bukti/Pertemuan-12-10-2026)
+![Bukti Hari 1](bukti/Pertemuan-12-10-2026.png)
 
 ## Diskusi Tanggal 13-Okttober-2026
 Diskusi = Melakukan Testing pada kode dan mengambil bukti agar dapat membuat penjelasan di bagian jurnal.md
 
-![Bukti Hari 2](bukti/Pertemuan-13-10-2026)
+![Bukti Hari 2](bukti/Pertemuan-13-10-2026.png)
 
 ## Jalur yang dipilih
 - [RPC], alasan: dikarenakan untuk bagian pembayaran memerlukan komunikasi secara sinkron, agar client mendapatkan respon pembayaran berhasil transaksi secara langsung dan instan.Serta system tersebut lebih simple dan juga tanpa perlu ada nya pihak ketiga yaitu broker.
@@ -30,10 +30,10 @@ Apabila server mati setelah mengurangi saldo tetapi sebelum mengirim respons ke 
  
 ### Bukti
 **1.Bukti Menjalankan Server **
-![Server.py](bukti/Bukti-Server.py)
+![Server.py](bukti/Bukti-Server-py,png)
 
 **2. Bukti Menjalankan Client **
-![Client.py](bukti/Bukti-client.py)
+![Client.py](bukti/Bukti-client-py.png)
 
 **3. Bukti Kondisi Server Mati
 
