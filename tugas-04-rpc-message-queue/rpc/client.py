@@ -1,8 +1,3 @@
-"""
-Tugas 4 - Jalur A: RPC Client (simulasi modul Pesanan)
-Jalankan server.py di terminal lain terlebih dahulu.
-"""
-
 from tracemalloc import start
 from weakref import proxy
 import xmlrpc.client
@@ -17,14 +12,18 @@ def main():
     start = time.time()
     # TODO 2: panggil proxy.cek_saldo("user1") dan cetak hasilnya + waktu tempuh
     #         (buktikan client BENAR-BENAR menunggu sampai server membalas)
-    hasil_saldo = proxy.cek_saldo("user1")
-    waktu_tempuh = time.time() - start
-    print(f"Hasil: Saldo Rp{hasil_saldo} | Diselesaikan dalam waktu: {waktu_tempuh:.4f} detik")
+    try:
+        hasil_saldo = proxy.cek_saldo("user1")
+        waktu_tempuh = time.time() - start
+        print(f"Hasil: Saldo Rp{hasil_saldo} | Diselesaikan dalam waktu: {waktu_tempuh:.4f} detik")
 
-    print("Memanggil proses_pembayaran('user1', 20000) ...")
-    # TODO 3: panggil proxy.proses_pembayaran("user1", 20000) dan cetak hasilnya
-    hasil_bayar = proxy.proses_pembayaran("user1", 20000)
-    print(f"Hasil eksekusi pembayaran: {hasil_bayar}")
-
+        print("Memanggil proses_pembayaran('user1', 20000) ...")
+        # TODO 3: panggil proxy.proses_pembayaran("user1", 20000) dan cetak hasilnya
+        hasil_bayar = proxy.proses_pembayaran("user1", 20000)
+        print(f"Hasil eksekusi pembayaran: {hasil_bayar}")
+    except ConnectionRefusedError:
+        print("Gagal terhubung ke server. Pastikan server.py sudah dijalankan di terminal lain.")
+    except Exception as e:
+        print(f"Terjadi kesalahan: {e}")
 if __name__ == "__main__":
     main()
