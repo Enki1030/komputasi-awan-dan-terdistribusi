@@ -141,6 +141,7 @@ class Node:
                         with self.lock:
                             self.leader_id = None # Reset status leader
                         self.start_election()
+                        
 
 def main():
     parser = argparse.ArgumentParser()
