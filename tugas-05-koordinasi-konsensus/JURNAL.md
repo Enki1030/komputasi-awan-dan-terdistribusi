@@ -1,5 +1,11 @@
 # Jurnal Proses — Tugas 5
 
+## 19-Oktober-2026
+Diskusi = membuat kode todo (niko mengerjakan todo 1 & 2 dan liel mengerjakan todo 3&4)
+Bukti = 
+
+![Buktipertemuan](bukti/buktipertemuan.png)
+
 ## Implementasi Bully
 - Kendala saat mengisi TODO 1-4: Terjadi deadlock (re-entrant lock) ketika start_election() memanggil declare_leader() secara langsung di dalam blok with self.lock:. Hal ini menyebabkan Node 5 terkuci dan tidak bisa dihentikan menggunakan Ctrl+C. Solusinya adalah memisahkan evaluasi kondisi ke dalam variabel lokal is_leader di dalam lock, lalu memanggil declare_leader() di luar blok lock, dengan begitu node 5 tidak terkunci dan akhir nya program berjalan.
 
