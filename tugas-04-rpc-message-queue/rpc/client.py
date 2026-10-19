@@ -1,8 +1,3 @@
-"""
-Tugas 4 - Jalur A: RPC Client (simulasi modul Pesanan)
-Jalankan server.py di terminal lain terlebih dahulu.
-"""
-
 from tracemalloc import start
 from weakref import proxy
 import xmlrpc.client
