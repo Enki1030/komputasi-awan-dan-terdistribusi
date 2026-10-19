@@ -88,19 +88,28 @@ class Node:
         higher_peers = {pid: p for pid, p in self.peers.items() if pid > self.node_id}
         print(f"[Node {self.node_id}] TODO: mulai election ke peer lebih tinggi: {higher_peers}")
 
+        # Reset flag status balasan OK di dalam lock
         with self.lock:
             self.ok_received = False
 
+        # Kirim pesan ELECTION ke semua node dengan ID lebih tinggi
         for pid, port in higher_peers.items():
             self.send_message(port, "ELECTION")
 
+        # Beri jeda waktu untuk menerima balasan OK
         time.sleep(ELECTION_TIMEOUT)
+
+        # Evaluasi kondisi di dalam lock tanpa memanggil declare_leader() secara langsung
+        is_leader = False
         with self.lock:
             if not self.ok_received:
-                self.declare_leader()
+                is_leader = True
             else:
                 print(f"[Node {self.node_id}] Ada node lebih tinggi yang merespons, tunggu leader baru")
 
+        # Panggil declare_leader() di luar konteks lock untuk mencegah deadlock (re-entry lock)
+        if is_leader:
+            self.declare_leader()
     def declare_leader(self):
         """Node ini menyatakan dirinya leader dan memberi tahu semua node lain."""
         # TODO 3: set self.leader_id = self.node_id, lalu kirim "COORDINATOR"
@@ -162,8 +171,11 @@ def main():
     time.sleep(1)  # beri waktu semua node lain start dulu sebelum election awal
     node.start_election()
 
-    while True:
-        time.sleep(60)
+    try:
+        while True:
+            time.sleep(1) # Diubah ke 1 detik agar langsung merespons Ctrl+C
+    except KeyboardInterrupt:
+        print(f"\n[Node {args.id}] Dimatikan secara paksa (Ctrl+C). Keluar dari program...")
 
 
 if __name__ == "__main__":
