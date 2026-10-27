@@ -1,5 +1,11 @@
 # Jurnal Proses — Tugas 6
 
+## Pertemuan 27 Oktober 2026
+Hasil Diskusi = Mengerjakan tugas masing masing, Liel Mengerjakan bagian Skenario join/leave dan Todo 1,2,3,4 dan Niko Mengerjakan bagian Implementasi find_successsor beserta todo 5 6 7. 
+
+[Bukti pertemuan](bukti/pertemuan127oktober.png)
+
+
 ## Implementasi find_successor
 - Kesalahan pertama yang ditemui: Lupa menangani kondisi *wrap-around* ketika `key_hash` lebih besar dari seluruh ID node di ring, serta belum ada validasi kondisi saat ring masih kosong.
 - Cara memperbaikinya: Mengurutkan seluruh ID node aktif dengan `sorted(self.nodes.keys())`, lalu mengambil node pertama yang bernilai `>= key_hash`. Jika tidak ada node yang memenuhi, fungsi mengembalikan node pertama (`sorted_node_ids[0]`) sebagai bentuk *wrap-around* melingkar.
@@ -24,6 +30,10 @@
 - Sebelum: `node-jakarta-1` tidak menyimpan data kurir apa pun karena ID hash-nya bukan merupakan node terdekat (successor) bagi ID kurir mana pun yang sudah terdaftar di dalam sistem.
 
 - Sesudah: Saat fungsi `leave("node-jakarta-1")` dijalankan, sistem memeriksa apakah ada data pada node tersebut yang perlu dialihkan. Karena node-jakarta-1 tidak memegang data kurir apa pun, node tersebut langsung keluar dari ring tanpa perlu memindahkan data ke node lain.
+
+## Bukti Output Terminal
+
+[bukti](bukti/hasilDHT_week6.png)
 
 ## Log Penggunaan AI (Level 2)
 
