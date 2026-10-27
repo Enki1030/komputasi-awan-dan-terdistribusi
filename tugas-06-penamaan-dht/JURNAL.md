@@ -3,7 +3,7 @@
 ## Pertemuan 27 Oktober 2026
 Hasil Diskusi = Mengerjakan tugas masing masing, Liel Mengerjakan bagian Skenario join/leave dan Todo 1,2,3,4 dan Niko Mengerjakan bagian Implementasi find_successsor beserta todo 5 6 7. 
 
-[Bukti pertemuan](bukti/pertemuan127oktober.png)
+![Bukti pertemuan](bukti/pertemuan127oktober.png)
 
 
 ## Implementasi find_successor
@@ -33,7 +33,7 @@ Hasil Diskusi = Mengerjakan tugas masing masing, Liel Mengerjakan bagian Skenari
 
 ## Bukti Output Terminal
 
-[bukti](bukti/hasilDHT_week6.png)
+![bukti](bukti/hasilDHT_week6.png)
 
 ## Log Penggunaan AI (Level 2)
 
