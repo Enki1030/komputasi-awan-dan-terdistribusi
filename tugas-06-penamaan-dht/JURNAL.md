@@ -3,6 +3,13 @@
 ## Implementasi find_successor
 - Kesalahan pertama yang ditemui: Lupa menangani kondisi *wrap-around* ketika `key_hash` lebih besar dari seluruh ID node di ring, serta belum ada validasi kondisi saat ring masih kosong.
 - Cara memperbaikinya: Mengurutkan seluruh ID node aktif dengan `sorted(self.nodes.keys())`, lalu mengambil node pertama yang bernilai `>= key_hash`. Jika tidak ada node yang memenuhi, fungsi mengembalikan node pertama (`sorted_node_ids[0]`) sebagai bentuk *wrap-around* melingkar.
+- Implementasi find_successor: ```find_successor``` adalah fungsi yang di gunakan sebagai mesin pencari rute didalam topologi chord (wrap around). Alur dari fungsi ini adalah sebagai berikut:
+  1. Pengurutan
+     Setiap kali pencarian di panggil, fungsi akan mengambil seluruh ID server (node) yang sedang aktif dan disusun dalam urutan membesar (ascending). Node yang masih dalam bentuk string (node-jakarta-1, node-bandung-1, node-jakarta-2 dst), akan di ubah lewat fungsi ``hash_id`` menjadi angka dengan rentang 0-255. Pada fase awal, node yang sudah di ubah ke bentuk hash akan berbentuk seperti [40, 102, 136, 177] dengan urutan membesar (ascending). 
+  2. Pengkondisian (node_id >= key_hash)
+     Algoritma akan melakukan pengecekan menggunakan kondisi: ``node_id >= key_hash``. Sistem akan melakukan pengecekan pada deret angka node tersebut [40, 102, 136, 177], lalu sistem akan berhenti pada entitas pertama yang nilainya lebih besar atau sama dengan nilai hash pencarian (node_id >= key_hash). 
+  3. Pengecekan (untuk Wrap Around mekansime)
+     Jika ternyata nilai key_hash nya melampaui ID server tertinggi di dalam deretan angka itu (misal 200, sementara batas atas nya adalah 177), maka siklus pemindaian nya akan gagal dan fungsi akan secara otomatis kembali secara melingkar dengan menunjuk index pertama dari deret tersebut (sorted_nodes_ids[0]), dengan begitu tercipta cincin yang di sebut mekanisme Wrap around. 
 
 ## Skenario join/leave
 - Hasil sebelum & sesudah node baru bergabung:...
